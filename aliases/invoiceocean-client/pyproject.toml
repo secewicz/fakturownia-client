@@ -1,6 +1,6 @@
 [project]
 name = "invoiceocean-client"
-version = "0.2.1"
+version = "0.3.0"
 description = "Unofficial Python client for the InvoiceOcean REST API (alias for fakturownia-client)"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -17,7 +17,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 # Pinned exactly: this alias always mirrors one fakturownia-client release.
-dependencies = ["fakturownia-client==0.2.1"]
+dependencies = ["fakturownia-client==0.3.0"]
 
 [project.urls]
 Repository = "https://github.com/KrzysztofMarmol/fakturownia-client"

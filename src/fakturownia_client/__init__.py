@@ -16,6 +16,7 @@ from .exceptions import (
     ValidationError,
 )
 from .models import (
+    ApiRecord,
     Client,
     Invoice,
     InvoiceCreate,
@@ -29,6 +30,7 @@ from .models import (
 
 __all__ = [
     "AsyncFakturowniaClient",
+    "ApiRecord",
     "AuthenticationError",
     "BadRequestError",
     "Client",

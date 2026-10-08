@@ -30,7 +30,7 @@ from .exceptions import (
     _retry_after_seconds,
     raise_for_status,
 )
-from .models import Client, Invoice, InvoiceCreate, InvoiceStatus, Payment, Product
+from .models import ApiRecord, Client, Invoice, InvoiceCreate, InvoiceStatus, Payment, Product
 from .pagination import MAX_PER_PAGE, iter_pages
 
 __all__ = ["FakturowniaClient", "normalize_domain"]
@@ -315,6 +315,91 @@ class FakturowniaClient:
     def delete_product(self, product_id: int) -> None:
         """Undocumented endpoint — the official API README lists no product DELETE."""
         self._execute(_ops.delete_product(product_id))
+
+    # -- additional read-only resources ---------------------------------------
+
+    def list_recurrings(self, *, page: int = 1, per_page: int = 25) -> list[ApiRecord]:
+        return self._execute(_ops.list_recurrings(page=page, per_page=per_page))
+
+    def get_recurring(self, recurring_id: int) -> ApiRecord:
+        return self._execute(_ops.get_recurring(recurring_id))
+
+    def list_price_lists(self, *, page: int = 1, per_page: int = 25) -> list[ApiRecord]:
+        return self._execute(_ops.list_price_lists(page=page, per_page=per_page))
+
+    def get_price_list(self, price_list_id: int) -> ApiRecord:
+        return self._execute(_ops.get_price_list(price_list_id))
+
+    def list_warehouses(self, *, page: int = 1, per_page: int = 25) -> list[ApiRecord]:
+        return self._execute(_ops.list_warehouses(page=page, per_page=per_page))
+
+    def get_warehouse(self, warehouse_id: int) -> ApiRecord:
+        return self._execute(_ops.get_warehouse(warehouse_id))
+
+    def list_warehouse_documents(self, *, page: int = 1, per_page: int = 25) -> list[ApiRecord]:
+        return self._execute(_ops.list_warehouse_documents(page=page, per_page=per_page))
+
+    def get_warehouse_document(self, warehouse_document_id: int) -> ApiRecord:
+        return self._execute(_ops.get_warehouse_document(warehouse_document_id))
+
+    def list_warehouse_actions(
+        self,
+        *,
+        warehouse_id: int | None = None,
+        kind: str | None = None,
+        product_id: int | None = None,
+        date_from: str | None = None,
+        date_to: str | None = None,
+        from_warehouse_document: int | None = None,
+        to_warehouse_document: int | None = None,
+        warehouse_document_id: int | None = None,
+        page: int = 1,
+        per_page: int = 25,
+    ) -> list[ApiRecord]:
+        return self._execute(
+            _ops.list_warehouse_actions(
+                warehouse_id=warehouse_id,
+                kind=kind,
+                product_id=product_id,
+                date_from=date_from,
+                date_to=date_to,
+                from_warehouse_document=from_warehouse_document,
+                to_warehouse_document=to_warehouse_document,
+                warehouse_document_id=warehouse_document_id,
+                page=page,
+                per_page=per_page,
+            )
+        )
+
+    def list_categories(self, *, page: int = 1, per_page: int = 25) -> list[ApiRecord]:
+        return self._execute(_ops.list_categories(page=page, per_page=per_page))
+
+    def get_category(self, category_id: int) -> ApiRecord:
+        return self._execute(_ops.get_category(category_id))
+
+    def list_departments(self, *, page: int = 1, per_page: int = 25) -> list[ApiRecord]:
+        return self._execute(_ops.list_departments(page=page, per_page=per_page))
+
+    def get_department(self, department_id: int) -> ApiRecord:
+        return self._execute(_ops.get_department(department_id))
+
+    def list_issuers(self, *, page: int = 1, per_page: int = 25) -> list[ApiRecord]:
+        return self._execute(_ops.list_issuers(page=page, per_page=per_page))
+
+    def get_issuer(self, issuer_id: int) -> ApiRecord:
+        return self._execute(_ops.get_issuer(issuer_id))
+
+    def list_bank_accounts(self, *, page: int = 1, per_page: int = 25) -> list[ApiRecord]:
+        return self._execute(_ops.list_bank_accounts(page=page, per_page=per_page))
+
+    def get_bank_account(self, bank_account_id: int) -> ApiRecord:
+        return self._execute(_ops.get_bank_account(bank_account_id))
+
+    def list_webhooks(self, *, page: int = 1, per_page: int = 25) -> list[ApiRecord]:
+        return self._execute(_ops.list_webhooks(page=page, per_page=per_page))
+
+    def get_webhook(self, webhook_id: int) -> ApiRecord:
+        return self._execute(_ops.get_webhook(webhook_id))
 
 
 def _parse(op: _ops.Op[T], response: httpx.Response) -> T:
