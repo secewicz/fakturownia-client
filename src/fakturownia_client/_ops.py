@@ -13,6 +13,7 @@ from typing import Any, Generic, TypeVar
 
 from .exceptions import FakturowniaError
 from .models import ApiRecord, Client, Invoice, InvoiceCreate, InvoiceStatus, Payment, Product
+from .pagination import MAX_PER_PAGE
 
 T = TypeVar("T")
 
@@ -70,6 +71,10 @@ def _record(data: Any) -> ApiRecord:
 def _list_records(
     path: str, *, page: int = 1, per_page: int = 25, **filters: Any
 ) -> Op[list[ApiRecord]]:
+    if page < 1:
+        raise ValueError("page must be at least 1")
+    if not 1 <= per_page <= MAX_PER_PAGE:
+        raise ValueError(f"per_page must be between 1 and {MAX_PER_PAGE}")
     return Op(
         "GET",
         path,

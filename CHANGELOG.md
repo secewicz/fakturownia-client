@@ -5,6 +5,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/), versioning: SemVer.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-08
+
 ### Added
 - Read-only list/get support in both sync and async clients for recurring
   definitions, price lists, warehouses, warehouse documents, categories,

@@ -1,3 +1,5 @@
+from typing import Any
+
 import httpx
 import pytest
 import respx
@@ -82,3 +84,21 @@ def test_list_warehouse_actions_forwards_document_filters(
         "page": "3",
         "per_page": "100",
     }
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "message"),
+    [
+        ({"page": 0}, "page must be at least 1"),
+        ({"per_page": 0}, "per_page must be between 1 and 100"),
+        ({"per_page": 101}, "per_page must be between 1 and 100"),
+    ],
+)
+def test_read_only_resources_reject_invalid_pagination(
+    client: FakturowniaClient, kwargs: dict[str, Any], message: str
+) -> None:
+    with pytest.raises(ValueError, match=message):
+        client.list_recurrings(**kwargs)
+
+    with pytest.raises(ValueError, match=message):
+        client.list_warehouse_actions(**kwargs)
