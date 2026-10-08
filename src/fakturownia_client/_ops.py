@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any, Generic, TypeVar
 
 from .exceptions import FakturowniaError
-from .models import Client, Invoice, InvoiceCreate, InvoiceStatus, Payment, Product
+from .models import ApiRecord, Client, Invoice, InvoiceCreate, InvoiceStatus, Payment, Product
 
 T = TypeVar("T")
 
@@ -57,6 +57,29 @@ def _payment(data: Any) -> Payment:
 
 def _payments(data: Any) -> list[Payment]:
     return [Payment.model_validate(item) for item in data]
+
+
+def _records(data: Any) -> list[ApiRecord]:
+    return [ApiRecord.model_validate(item) for item in data]
+
+
+def _record(data: Any) -> ApiRecord:
+    return ApiRecord.model_validate(data)
+
+
+def _list_records(
+    path: str, *, page: int = 1, per_page: int = 25, **filters: Any
+) -> Op[list[ApiRecord]]:
+    return Op(
+        "GET",
+        path,
+        _records,
+        params={**filters, "page": page, "per_page": per_page},
+    )
+
+
+def _get_record(path: str) -> Op[ApiRecord]:
+    return Op("GET", path, _record)
 
 
 def _none(data: Any) -> None:
@@ -288,3 +311,106 @@ def update_product(product_id: int, fields: dict[str, Any]) -> Op[Product]:
 
 def delete_product(product_id: int) -> Op[None]:
     return Op("DELETE", f"/products/{product_id}.json", _none)
+
+
+# -- additional read-only resources -------------------------------------------
+
+
+def list_recurrings(*, page: int = 1, per_page: int = 25) -> Op[list[ApiRecord]]:
+    return _list_records("/recurrings.json", page=page, per_page=per_page)
+
+
+def get_recurring(recurring_id: int) -> Op[ApiRecord]:
+    return _get_record(f"/recurrings/{recurring_id}.json")
+
+
+def list_price_lists(*, page: int = 1, per_page: int = 25) -> Op[list[ApiRecord]]:
+    return _list_records("/price_lists.json", page=page, per_page=per_page)
+
+
+def get_price_list(price_list_id: int) -> Op[ApiRecord]:
+    return _get_record(f"/price_lists/{price_list_id}.json")
+
+
+def list_warehouses(*, page: int = 1, per_page: int = 25) -> Op[list[ApiRecord]]:
+    return _list_records("/warehouses.json", page=page, per_page=per_page)
+
+
+def get_warehouse(warehouse_id: int) -> Op[ApiRecord]:
+    return _get_record(f"/warehouses/{warehouse_id}.json")
+
+
+def list_warehouse_documents(*, page: int = 1, per_page: int = 25) -> Op[list[ApiRecord]]:
+    return _list_records("/warehouse_documents.json", page=page, per_page=per_page)
+
+
+def get_warehouse_document(warehouse_document_id: int) -> Op[ApiRecord]:
+    return _get_record(f"/warehouse_documents/{warehouse_document_id}.json")
+
+
+def list_warehouse_actions(
+    *,
+    warehouse_id: int | None = None,
+    kind: str | None = None,
+    product_id: int | None = None,
+    date_from: str | None = None,
+    date_to: str | None = None,
+    from_warehouse_document: int | None = None,
+    to_warehouse_document: int | None = None,
+    warehouse_document_id: int | None = None,
+    page: int = 1,
+    per_page: int = 25,
+) -> Op[list[ApiRecord]]:
+    return _list_records(
+        "/warehouse_actions.json",
+        warehouse_id=warehouse_id,
+        kind=kind,
+        product_id=product_id,
+        date_from=date_from,
+        date_to=date_to,
+        from_warehouse_document=from_warehouse_document,
+        to_warehouse_document=to_warehouse_document,
+        warehouse_document_id=warehouse_document_id,
+        page=page,
+        per_page=per_page,
+    )
+
+
+def list_categories(*, page: int = 1, per_page: int = 25) -> Op[list[ApiRecord]]:
+    return _list_records("/categories.json", page=page, per_page=per_page)
+
+
+def get_category(category_id: int) -> Op[ApiRecord]:
+    return _get_record(f"/categories/{category_id}.json")
+
+
+def list_departments(*, page: int = 1, per_page: int = 25) -> Op[list[ApiRecord]]:
+    return _list_records("/departments.json", page=page, per_page=per_page)
+
+
+def get_department(department_id: int) -> Op[ApiRecord]:
+    return _get_record(f"/departments/{department_id}.json")
+
+
+def list_issuers(*, page: int = 1, per_page: int = 25) -> Op[list[ApiRecord]]:
+    return _list_records("/issuers.json", page=page, per_page=per_page)
+
+
+def get_issuer(issuer_id: int) -> Op[ApiRecord]:
+    return _get_record(f"/issuers/{issuer_id}.json")
+
+
+def list_bank_accounts(*, page: int = 1, per_page: int = 25) -> Op[list[ApiRecord]]:
+    return _list_records("/bank_accounts.json", page=page, per_page=per_page)
+
+
+def get_bank_account(bank_account_id: int) -> Op[ApiRecord]:
+    return _get_record(f"/bank_accounts/{bank_account_id}.json")
+
+
+def list_webhooks(*, page: int = 1, per_page: int = 25) -> Op[list[ApiRecord]]:
+    return _list_records("/webhooks.json", page=page, per_page=per_page)
+
+
+def get_webhook(webhook_id: int) -> Op[ApiRecord]:
+    return _get_record(f"/webhooks/{webhook_id}.json")

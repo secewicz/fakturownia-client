@@ -28,6 +28,13 @@ def _blank_to_none(value: object) -> object:
     return None if value == "" else value
 
 
+class ApiRecord(_ApiModel):
+    """Generic read-only API resource with stable common fields."""
+
+    id: int
+    name: str | None = None
+
+
 class InvoicePosition(_ApiModel):
     id: int | None = None
     name: str | None = None

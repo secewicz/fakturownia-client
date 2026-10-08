@@ -5,6 +5,7 @@ import pytest
 import respx
 
 from fakturownia_client import (
+    ApiRecord,
     AsyncFakturowniaClient,
     Invoice,
     NotFoundError,
@@ -110,6 +111,38 @@ async def test_async_send_invoice_by_email(
     await aclient.send_invoice_by_email(1, email_to="a@acme.pl")
 
     assert dict(httpx.URL(str(route.calls.last.request.url)).params)["email_to"] == "a@acme.pl"
+
+
+async def test_async_read_only_resources_mirror_sync_client(
+    api: respx.MockRouter, aclient: AsyncFakturowniaClient
+) -> None:
+    resources = [
+        ("recurrings", "recurring"),
+        ("price_lists", "price_list"),
+        ("warehouses", "warehouse"),
+        ("warehouse_documents", "warehouse_document"),
+        ("categories", "category"),
+        ("departments", "department"),
+        ("issuers", "issuer"),
+        ("bank_accounts", "bank_account"),
+        ("webhooks", "webhook"),
+    ]
+    for plural, singular in resources:
+        api.get(f"/{plural}.json").mock(return_value=httpx.Response(200, json=[{"id": 1}]))
+        api.get(f"/{plural}/1.json").mock(return_value=httpx.Response(200, json={"id": 1}))
+
+        listed = await getattr(aclient, f"list_{plural}")(page=2, per_page=10)
+        fetched = await getattr(aclient, f"get_{singular}")(1)
+
+        assert isinstance(listed[0], ApiRecord)
+        assert fetched.id == 1
+
+    route = api.get("/warehouse_actions.json").mock(
+        return_value=httpx.Response(200, json=[{"id": 2, "kind": "transfer"}])
+    )
+    actions = await aclient.list_warehouse_actions(warehouse_id=4, kind="transfer")
+    assert actions[0].kind == "transfer"
+    assert dict(httpx.URL(str(route.calls.last.request.url)).params)["warehouse_id"] == "4"
 
 
 async def test_async_error_mapping(api: respx.MockRouter, aclient: AsyncFakturowniaClient) -> None:

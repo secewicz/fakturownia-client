@@ -6,8 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 **Unofficial** Python client for the [Fakturownia](https://fakturownia.pl)
-(InvoiceOcean) REST API. Covers invoices (list/search, create/update, status
-changes, PDF download), clients (CRUD) and products.
+(InvoiceOcean) REST API. Covers invoices, clients, products, payments, recurring
+definitions, price lists, warehouses and stock movements, categories,
+departments, issuers, bank accounts, and webhooks.
 
 > This is a community-maintained project. It is not affiliated with, endorsed
 > by, or sponsored by Fakturownia sp. z o.o. or InvoiceOcean. "Fakturownia"
@@ -62,6 +63,11 @@ with FakturowniaClient("mycompany", api_token="...") as fk:
     # clients / products
     clients = fk.list_clients(tax_no="1234567890")
     products = fk.list_products()
+
+    # additional read-only account resources (all lists use page/per_page)
+    warehouses = fk.list_warehouses(per_page=100)
+    movements = fk.list_warehouse_actions(warehouse_id=warehouses[0].id)
+    webhooks = fk.list_webhooks()
 ```
 
 ### Async

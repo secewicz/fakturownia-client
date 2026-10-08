@@ -3,6 +3,15 @@
 All notable changes to this project are documented here.
 Format: [Keep a Changelog](https://keepachangelog.com/), versioning: SemVer.
 
+## [Unreleased]
+
+### Added
+- Read-only list/get support in both sync and async clients for recurring
+  definitions, price lists, warehouses, warehouse documents, categories,
+  departments, issuers, bank accounts, and webhooks.
+- Filtered `list_warehouse_actions` support for warehouse, kind, product, date,
+  and warehouse-document filters.
+
 ## [0.2.1] - 2026-07-31
 
 ### Fixed
